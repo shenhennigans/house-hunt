@@ -66,6 +66,12 @@ function getFeed(){
                 writeToObject(doc);
                 constructTable();
             })
+            .catch(error => {
+                inputError.innerText = `an error occurred parsing rss feed: ${error.message}`;
+            })
+        })
+        .catch(error => {
+            inputError.innerText = `an error occurred fetching rss feed: ${error.message}`;
         })
     }
     else{
@@ -95,10 +101,6 @@ function writeToObject(doc){
             listingTitleMain = listingTitle.substr(0, listingTitle.indexOf(','));
             listingTitleSub = listingTitle.substr(listingTitleMain.length+1); 
         }
-        listingUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
-        listingPrice = item.querySelector('price') ? item.querySelector('price').textContent : '';
-        listingBeds = item.querySelector('bedrooms') ? item.querySelector('bedrooms').textContent : '';
-        listingBaths = item.querySelector('bathrooms') ? item.querySelector('bathrooms').textContent : '';
         if(item.querySelector('description')){
             listingDesc = item.querySelector('description').textContent;
             listingImageUrl = scrapeImage(listingDesc);
@@ -107,13 +109,17 @@ function writeToObject(doc){
             listingDate = item.querySelector('pubDate').textContent;
             listingDate = listingDate.substring(0, listingDate.length-5);
         }
-        listingLat = item.querySelector('lat') ? item.querySelector('lat').textContent : '';
-        listingLong = item.querySelector('long') ? item.querySelector('long').textContent : '';
         if(item.querySelector('guid')){
             listingId =  item.querySelector('guid').textContent;
             listingId = listingId.substr((listingId.substr(0, listingId.indexOf('='))).length+1);
         }
-        
+        listingUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
+        listingPrice = item.querySelector('price') ? item.querySelector('price').textContent : '';
+        listingBeds = item.querySelector('bedrooms') ? item.querySelector('bedrooms').textContent : '';
+        listingBaths = item.querySelector('bathrooms') ? item.querySelector('bathrooms').textContent : '';
+        listingLat = item.querySelector('lat') ? item.querySelector('lat').textContent : '';
+        listingLong = item.querySelector('long') ? item.querySelector('long').textContent : '';
+
         let listingObject = {
             id : listingId,
             title : listingTitleMain,
@@ -128,13 +134,13 @@ function writeToObject(doc){
             lat: listingLat,
             long : listingLong
         }
-
         allListings.push(listingObject);
     })
 }
 
 function constructTable(){
     allListings.forEach(listing => {
+        // create dom elements
         let TableRow = document.createElement('div');
         let TableColumn1 = document.createElement('div');
         let TableColumn2 = document.createElement('div');
@@ -144,10 +150,12 @@ function constructTable(){
         TableColumn2.className = 'col-12 col-lg-6 listing-map';
         divider.className = 'dashed';
         
+        // set element content
         TableColumn1.innerHTML = `<div class="card"><img class="card-img-top" src="${listing.imgurl}" alt="listing image"><div class="card-body"><h5 class="card-title"><a href="${listing.url}" target=_blank>${listing.title}</a></h5><div class="card-subtitle mb-2 text-muted">${listing.subtitle}</div><div class="card-text"><p><b>${listing.price}€</b></p><p>${listing.beds} bed rooms & ${listing.baths} bath rooms</p><p>Listed on ${listing.datelisted}</p></div></div></div>`;
         TableColumn1.id = listing.id;
         TableColumn2.appendChild(constructMap(listing.lat, listing.long));
 
+        // append elements to page
         TableRow.appendChild(TableColumn1);
         TableRow.appendChild(TableColumn2);
         contentWrapper.appendChild(TableRow);
@@ -156,12 +164,14 @@ function constructTable(){
 }
 
 function constructMap(lat, long){
-    // construct map
+    // create dom elements
     let mapOuter = document.createElement('div');
-    mapOuter.className = 'mapouter';
     let mapCanvas = document.createElement('div');
-    mapCanvas.className = 'gmap_canvas';
     let iFrame = document.createElement('iframe');
+
+    // set element properties
+    mapOuter.className = 'mapouter';
+    mapCanvas.className = 'gmap_canvas';
     iFrame.width= '100%';
     iFrame.height = '100%';
     iFrame.src=`https://maps.google.com/maps?q=${lat}%2C${long}&t=&z=${mapZoom}&ie=UTF8&iwloc=&output=embed`;
@@ -169,8 +179,11 @@ function constructMap(lat, long){
     iFrame.scrolling = 'no';
     iFrame.marginheight = '0';
     iFrame.marginwidth = '0';
+
+    // construct map component
     mapCanvas.appendChild(iFrame);
     mapOuter.appendChild(mapCanvas);
+
     return mapOuter;
 }
 
@@ -210,6 +223,12 @@ function getTimeStamp(){
     let numMonth = d.getMonth();
     let month = months[numMonth];
     let hrs = d.getHours();
+    if (hrs.toString().length == 1) {
+        hrs = "0" + hrs;
+    }
     let min = d.getMinutes();
+    if (min.toString().length == 1) {
+        min = "0" + min;
+    }
     return `${month} ${day}, ${hrs}:${min}`;
 }
