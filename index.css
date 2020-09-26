@@ -4,31 +4,38 @@ body{
     color: white;
 }
 
-
-.table{
-    color: white;
-    margin-top: 20px;
+.jumbotron{
+    margin-bottom: 15px;
+    text-align: center;
 }
-
-.card-text{
-    color: #060607;
-}
-
 .lead{
     font-family: 'Source Sans Pro', sans-serif;
+    margin-bottom: 5px;
+}
+
+.listing-card, .listing-map{
+    margin-top: 15px;
+}
+.card-text{
+    color: #060607;
 }
 
 .mapouter{
     position:relative;
     text-align:right;
-    height:300px;
-    width:300px;}
-
+    height: 100%;
+    width: 100%;
+    min-height: 300px;
+}
 .gmap_canvas {
     overflow:hidden;
     background:none!important;
-    height:300px;
-    width:300px;
+    height:100%;
+    width:100%;
+}
+
+hr.dashed {
+    border-top: 2px dashed #fff;
 }
 
 #header{
@@ -44,4 +51,3 @@ body{
 #refresh-time{
     font-size: x-small;
 }
-

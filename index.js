@@ -1,6 +1,6 @@
 const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
 let feedUrl;
-const tableBody = document.getElementById('rss-content-table');
+const contentWrapper = document.getElementById('rss-content-wrapper');
 const refreshBtn = document.getElementById('refresh');
 const btnSubmitUrl = document.getElementById('btnSubmitUrl');
 const urlInput = document.getElementById('urlInput');
@@ -40,7 +40,7 @@ function readConfig(){
         urlInput.value = config.feedUrl;
         getFeed();
         // refresh every 15 min
-        feedInterval = setInterval(getFeed,90000);
+        feedInterval = setInterval(getFeed,900000);
     } 
 }
 
@@ -61,9 +61,8 @@ function getFeed(){
             .then((xmlTxt) => {
                 var domParser = new DOMParser();
                 let doc = domParser.parseFromString(xmlTxt, 'text/xml');
-                let timestamp = (Date(Date.now())).toString();
                 feedHeadLine.innerText = getHeadline(doc);
-                feedRefreshLine.innerText = ` - last refreshed at ${timestamp}`
+                feedRefreshLine.innerText = ` - last refreshed at ${getTimeStamp()}`
                 writeToObject(doc);
                 constructTable();
             })
@@ -136,23 +135,24 @@ function writeToObject(doc){
 
 function constructTable(){
     allListings.forEach(listing => {
-        // construct table entries
-        let newTableRow = document.createElement('tr');
-        let rowTitle = document.createElement('td');
-        let rowMap = document.createElement('td');
-        let rowDateListed = document.createElement('td');
-
-        rowTitle.innerHTML = `<div class="card"><img class="card-img-top" src="${listing.imgurl}" alt="listing image"><div class="card-body"><h5 class="card-title"><a href="${listing.url}" target=_blank>${listing.title}</a></h5><div class="card-subtitle mb-2 text-muted">${listing.subtitle}</div><div class="card-text"><p><b>${listing.price}€</b></p><p>${listing.beds} bed rooms & ${listing.baths} bath rooms</p></div></div></div>`
-        rowTitle.id = listing.id;
-        rowMap.appendChild(constructMap(listing.lat, listing.long));
-        rowDateListed.innerText = listing.datelisted;
+        let TableRow = document.createElement('div');
+        let TableColumn1 = document.createElement('div');
+        let TableColumn2 = document.createElement('div');
+        let divider = document.createElement('hr');
+        TableRow.className = 'row';
+        TableColumn1.className = 'col-12 col-lg-6 listing-card';
+        TableColumn2.className = 'col-12 col-lg-6 listing-map';
+        divider.className = 'dashed';
         
-        // append table elements
-        newTableRow.appendChild(rowTitle);
-        newTableRow.appendChild(rowMap);
-        newTableRow.appendChild(rowDateListed);
-        tableBody.appendChild(newTableRow);
-    });
+        TableColumn1.innerHTML = `<div class="card"><img class="card-img-top" src="${listing.imgurl}" alt="listing image"><div class="card-body"><h5 class="card-title"><a href="${listing.url}" target=_blank>${listing.title}</a></h5><div class="card-subtitle mb-2 text-muted">${listing.subtitle}</div><div class="card-text"><p><b>${listing.price}€</b></p><p>${listing.beds} bed rooms & ${listing.baths} bath rooms</p><p>Listed on ${listing.datelisted}</p></div></div></div>`;
+        TableColumn1.id = listing.id;
+        TableColumn2.appendChild(constructMap(listing.lat, listing.long));
+
+        TableRow.appendChild(TableColumn1);
+        TableRow.appendChild(TableColumn2);
+        contentWrapper.appendChild(TableRow);
+        contentWrapper.appendChild(divider);
+    })
 }
 
 function constructMap(lat, long){
@@ -162,8 +162,8 @@ function constructMap(lat, long){
     let mapCanvas = document.createElement('div');
     mapCanvas.className = 'gmap_canvas';
     let iFrame = document.createElement('iframe');
-    iFrame.width= '300';
-    iFrame.height = '300';
+    iFrame.width= '100%';
+    iFrame.height = '100%';
     iFrame.src=`https://maps.google.com/maps?q=${lat}%2C${long}&t=&z=${mapZoom}&ie=UTF8&iwloc=&output=embed`;
     iFrame.frameborder='0';
     iFrame.scrolling = 'no';
@@ -195,10 +195,21 @@ function clearData(){
     allListings = [];
     feedHeadLine.innerText = '';
     feedRefreshLine.innerText = '';
-    tableBody.innerHTML = '';
+    contentWrapper.innerHTML = '';
     inputError.innerText = '';
 }
 
 function isValidUrl(url){
     return url.startsWith('https://www.daft.ie/rss.daft?');
+}
+
+function getTimeStamp(){
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let d = new Date();
+    let day = d.getDate();
+    let numMonth = d.getMonth();
+    let month = months[numMonth];
+    let hrs = d.getHours();
+    let min = d.getMinutes();
+    return `${month} ${day}, ${hrs}:${min}`;
 }

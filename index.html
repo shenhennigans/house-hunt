@@ -10,14 +10,13 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body onload="readConfig()">
-    
     <div class="row">
         <div class="col-2"></div>
         <div class="col-8">
             <div class="jumbotron jumbotron-fluid" id="header">
                 <div class="container text-white">
-                    <h1 class="display-4"><i>House Hunt</i></h1>
-                    <p class="lead"><img src="img/home.png" height="35px">a daft.ie rss reader</p>
+                    <h1 class="display-4"><img src="img/home.png" height="70px"><i>house hunt</i></h1>
+                    <p class="lead">a daft.ie rss reader</p>
                 </div>
             </div>
             <span id="feed-type"></span>
@@ -30,21 +29,13 @@
             </div> 
             
             <span class= "text-danger" id="input-error"></span>
-
-            <table class="table">
-                <thead>
-                    <th scope="col">Listing</th>
-                    <th scope="col">Map</th>
-                    <th scope="col">Date listed</th>
-                </thead>
-                <tbody id="rss-content-table">
-                </tbody>
-            </table>
+           
+            <div id="rss-content-wrapper"></div>
+            
             <div>Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
         </div>
         <div class="col-2"></div>
     </div>
-    
 <script src="index.js"></script>      
 </body>
 </html>
