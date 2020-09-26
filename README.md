@@ -1,5 +1,6 @@
 # house-hunt
-a daft.ie rss reader
+a daft.ie rss reader<br>
+www.shenhennigans.com/househunt
 <img src="img/hh.png">
 <ul>
 <li>get listings via daft.ie rss feed</li>
