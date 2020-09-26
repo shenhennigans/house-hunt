@@ -14,7 +14,7 @@ let feedInterval;
 refreshBtn.addEventListener('click', function(){
     clearInterval(feedInterval);
     getFeed();
-    feedInterval = setInterval(getFeed,90000);
+    feedInterval = setInterval(getFeed,900000);
 })
 
 btnSubmitUrl.addEventListener('click', function(){
