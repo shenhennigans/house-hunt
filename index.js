@@ -26,7 +26,6 @@ btnSubmitUrl.addEventListener('click', function(){
     else {
         inputError.innerText = 'please enter a valid daft.ie rss url';
     }
-    
 })
 
 function readConfig(){
@@ -62,7 +61,7 @@ function getFeed(){
                 var domParser = new DOMParser();
                 let doc = domParser.parseFromString(xmlTxt, 'text/xml');
                 feedHeadLine.innerText = getHeadline(doc);
-                feedRefreshLine.innerText = ` - last refreshed at ${getTimeStamp()}`
+                feedRefreshLine.innerText = ` last refreshed ${getTimeStamp()}`
                 writeToObject(doc);
                 constructTable();
             })

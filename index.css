@@ -45,9 +45,10 @@ hr.dashed {
 }
 
 #urlInput{
-    width: 70%;
+    width: 100%;
 }
 
 #refresh-time{
     font-size: x-small;
+    margin-bottom: 10px;
 }
