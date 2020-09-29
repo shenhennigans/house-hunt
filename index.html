@@ -27,7 +27,7 @@
                     <div id="refresh-time"></div>
                 </div>
             </div>
-            
+            <!--url input & buttons-->
             <div class="row">
                 <div class="col-12 col-lg-8">
                     <input type="text" value="" id="urlInput" required>
@@ -36,13 +36,24 @@
                     <input type="button" class="btn btn-success" value="Submit" id="btnSubmitUrl"/>
                     <button class="btn btn-primary" id="refresh">Refresh</button>
                 </div>
-            </div> 
+            </div>
+            <!--loader-->
+            <div class="row" id="loader-wrapper">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <div class="loader" id="loader"></div>
+                </div>
+                <div class="col-4"></div>
+            </div>
             
+            <!--error output-->
             <span class= "text-danger" id="input-error"></span>
            
+            <!--content-->
             <div id="rss-content-wrapper"></div>
             
-            <div>Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+            <!--footer,credit-->
+            <div>Icons made by <a href="http://www.freepik.com/" title="Freepik" target=_blank>Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon" target=_blank>www.flaticon.com</a></div>
         </div>
         <div class="col-2"></div>
     </div>

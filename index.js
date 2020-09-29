@@ -7,14 +7,16 @@ const urlInput = document.getElementById('urlInput');
 const feedHeadLine = document.getElementById('feed-type');
 const feedRefreshLine = document.getElementById('refresh-time');
 const inputError = document.getElementById('input-error');
+const loader = document.getElementById('loader');
+const loaderWrapper = document.getElementById('loader-wrapper');
 const mapZoom = '15';
+const refreshRate = 900000;
 let allListings = [];
 let feedInterval; 
 
 refreshBtn.addEventListener('click', function(){
-    clearInterval(feedInterval);
     getFeed();
-    feedInterval = setInterval(getFeed,900000);
+    setRefresh();
 })
 
 btnSubmitUrl.addEventListener('click', function(){
@@ -22,6 +24,7 @@ btnSubmitUrl.addEventListener('click', function(){
         feedUrl = urlInput.value;
         saveConfig();
         getFeed();
+        setRefresh();
     }
     else {
         inputError.innerText = 'please enter a valid daft.ie rss url';
@@ -38,8 +41,7 @@ function readConfig(){
         feedUrl = config.feedUrl;
         urlInput.value = config.feedUrl;
         getFeed();
-        // refresh every 15 min
-        feedInterval = setInterval(getFeed,900000);
+        setRefresh();
     } 
 }
 
@@ -52,6 +54,7 @@ function saveConfig(){
 
 function getFeed(){
     clearData();
+    showLoader();
     if(feedUrl != null){
         urlInput.value = feedUrl;
         fetch(proxyUrl + feedUrl)
@@ -64,18 +67,27 @@ function getFeed(){
                 feedRefreshLine.innerText = ` last refreshed ${getTimeStamp()}`
                 writeToObject(doc);
                 constructTable();
+                hideLoader();
             })
             .catch(error => {
                 inputError.innerText = `an error occurred parsing rss feed: ${error.message}`;
+                hideLoader();
             })
         })
         .catch(error => {
             inputError.innerText = `an error occurred fetching rss feed: ${error.message}`;
+            hideLoader();
         })
     }
     else{
         inputError.innerText = 'please enter a valid daft.ie rss url';
     }
+}
+
+function setRefresh(){
+    // clear the previous refresh interval, set the new refresh interval
+    clearInterval(feedInterval);
+    feedInterval = setInterval(getFeed,refreshRate);
 }
 
 function writeToObject(doc){
@@ -146,14 +158,14 @@ function constructTable(){
         let divider = document.createElement('hr');
         TableRow.className = 'row';
         TableColumn1.className = 'col-12 col-lg-6 listing-card';
+        TableColumn1.id = listing.id;
         TableColumn2.className = 'col-12 col-lg-6 listing-map';
         divider.className = 'dashed';
-        
+      
         // set element content
-        TableColumn1.innerHTML = `<div class="card"><img class="card-img-top" src="${listing.imgurl}" alt="listing image"><div class="card-body"><h5 class="card-title"><a href="${listing.url}" target=_blank>${listing.title}</a></h5><div class="card-subtitle mb-2 text-muted">${listing.subtitle}</div><div class="card-text"><p><b>${listing.price}€</b></p><p>${listing.beds} bed rooms & ${listing.baths} bath rooms</p><p>Listed on ${listing.datelisted}</p></div></div></div>`;
-        TableColumn1.id = listing.id;
+        TableColumn1.appendChild(constructContentCard(listing));
         TableColumn2.appendChild(constructMap(listing.lat, listing.long));
-
+      
         // append elements to page
         TableRow.appendChild(TableColumn1);
         TableRow.appendChild(TableColumn2);
@@ -162,6 +174,44 @@ function constructTable(){
     })
 }
 
+function constructContentCard(listing){
+    let cardElement = document.createElement('div');
+    let cardImgElement = document.createElement('img');
+    let cardBodyElement = document.createElement('div');
+    let cardTitleElement = document.createElement('h5');
+    let cardSubtitleElement = document.createElement('div');
+    let cardContentElement = document.createElement('div');
+    let showMoreWrapper = document.createElement('a');
+    let showMoreButton = document.createElement('button');
+    
+    cardElement.className = 'card';
+    cardImgElement.className = 'card-img-top';
+    cardImgElement.src = listing.imgurl;
+    cardImgElement.alt = 'listing image';
+    cardBodyElement.className = 'card-body';
+    cardTitleElement.className = 'card-title';
+    cardTitleElement.innerHTML = `<a href="${listing.url}" target=_blank>${listing.title}</a>`;
+    cardSubtitleElement.className = 'card-subtitle mb-2 text-muted';
+    cardSubtitleElement.innerText = listing.subtitle;
+    cardContentElement.className = 'card-text';
+    cardContentElement.innerHTML = `<p><b>${listing.price}€</b></p><p>${listing.beds} bed rooms & ${listing.baths} bath rooms</p><p>Listed on ${listing.datelisted}</p>`;
+    showMoreWrapper.href= listing.url;
+    showMoreWrapper.target = '_blank';
+    showMoreButton.className = 'btn btn-primary';
+    showMoreButton.innerText = 'view full ad';
+    
+    showMoreWrapper.appendChild(showMoreButton);
+    cardContentElement.appendChild(showMoreWrapper);
+
+    cardBodyElement.appendChild(cardTitleElement);
+    cardBodyElement.appendChild(cardSubtitleElement);
+    cardBodyElement.appendChild(cardContentElement);
+
+    cardElement.appendChild(cardImgElement);
+    cardElement.appendChild(cardBodyElement);
+    return cardElement;
+
+}
 function constructMap(lat, long){
     // create dom elements
     let mapOuter = document.createElement('div');
@@ -230,4 +280,14 @@ function getTimeStamp(){
         min = "0" + min;
     }
     return `${month} ${day}, ${hrs}:${min}`;
+}
+
+function showLoader(){
+    loader.style.visibility = 'visible';
+    loaderWrapper.style.height = '60px';
+}
+
+function hideLoader(){
+    loader.style.visibility = 'hidden';
+    loaderWrapper.style.height = '0px';
 }
